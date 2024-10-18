@@ -2,12 +2,16 @@ const http = require('http')
 const express = require('express');
 const app = express();
 var fs = require('fs')
+const cors = require('cors');
 
 app.use(express.json());
 const port = process.env.PORT || 4100;
+app.use(cors({
+    origin: 'http://localhost:4200'  // Replace this with your frontend's URL
+  }));
 
 
-app.get('/', (req,res) =>{
+app.get('/', (req,res) => {
     
     fs.readFile(__dirname + "/" + "traders.json",'utf8', (err,data) =>{
 
@@ -17,8 +21,9 @@ app.get('/', (req,res) =>{
         else{
             console.log(data)
             const tradersGet= JSON.parse(data)
-
-            res.json(tradersGet)
+    
+            
+            res.json(tradersGet)  
             
         }
 
@@ -38,41 +43,45 @@ app.get('/:id', (req,res) => {
         var trader = traders.find(trader => trader.id === parseInt(req.params.id));
 
 
-        console.log (req.body);
+        console.log ("trader",trader);
 
         res.json(trader)
     })
 })
 
-app.post('/addTrader', (req,res)=>{
+app.post('/addTrader', (req,res) => {
 
     var traders;
-    const newTrader = req.body;
+    const newTrader = req.body.trader;
 
     fs.readFile(__dirname + "/" + "traders.json",'utf8', (err,data) =>{
 
         traders = JSON.parse(data);
 
-        traders.traders.push(newTrader)
-        
+        newTrader.id = traders.length + 1
+
+        newTrader.key = newTrader.id.toString()
+
+        traders.push(newTrader)
+
         console.log("traders::", traders)
         console.log("trader", newTrader)
             
         fs.writeFile(__dirname + "/" + "traders.json",  JSON.stringify(traders,null,2),'utf8', (err,data) =>{
 
 
-            res.status(201).json({ message: "Trader added successfully", trader: JSON.stringify(traders, null, 2) });
+            res.status(201).json( traders);
         })
 
     })
 
 })
 
-app.delete('/delete/:id', (req,res)=>{
+app.delete('/delete/:id', (req,res) => {
 
     fs.readFile(__dirname + "/" + "traders.json",'utf8', (err,data) =>{
 
-        var traders = JSON.parse(data).traders
+        var traders = JSON.parse(data)
 
         traders = traders.filter(trader => trader.id !== parseInt(req.params.id));
 
@@ -81,7 +90,7 @@ app.delete('/delete/:id', (req,res)=>{
         fs.writeFile(__dirname + "/" + "traders.json",  JSON.stringify(traders,null,2),'utf8', (err,data) =>{
 
 
-            res.status(201).json({ message: "Trader delete successfully", trader: JSON.stringify(traders, null, 2) });
+            res.status(201).json(traders);
         })
     })
 
@@ -98,15 +107,16 @@ app.post('/deposit/:id/:amount', (req,res) => {
         var traders = JSON.parse(data)
 
         var trader = traders.find(trader => trader.id === parseInt(traderId));
-        // trader.data[0].amount= amount
-        trader.amount = amount
+       
+        trader.amount += Number(amount)
 
         console.log(trader)
 
         fs.writeFile(__dirname + "/" + "traders.json",  JSON.stringify(traders,null,2),'utf8', (err,data) =>{
 
 
-            res.status(201).json({ message: "deposit added successfully", trader: JSON.stringify(traders, null, 2) });
+            res.status(201).json(trader);
+            // res.json(trader)
         })
     })
 
@@ -123,21 +133,20 @@ app.post('/withdraw/:id/:amount', (req,res) => {
         var traders = JSON.parse(data)
 
         var trader = traders.find(trader => trader.id === parseInt(traderId));
-        // trader.data[0].amount= amount
-        trader.amount = amount
+        
+        trader.amount -= Number(amount)
 
         console.log(trader)
 
         fs.writeFile(__dirname + "/" + "traders.json",  JSON.stringify(traders,null,2),'utf8', (err,data) =>{
 
-
-            res.status(201).json({ message: "deposit added successfully", trader: JSON.stringify(traders, null, 2) });
+            res.status(201).json( trader);
         })
     })
 
 })
 
-app.listen(port, () =>{
+app.listen(port, () => {
     console.log(`server is running on port ${port}`)
 
 })
