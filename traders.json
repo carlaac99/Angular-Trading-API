@@ -1,16 +1,5 @@
 [
   {
-    "key": "1",
-    "id": 1,
-    "firstName": "Mike",
-    "lastName": "Spencer",
-    "dob": "1990-01-01",
-    "country": "Canada",
-    "email": "mike@test.com",
-    "amount": 9,
-    "actions": "<button (click)='deleteTrader'>Delete Trader</button>"
-  },
-  {
     "key": "2",
     "id": 2,
     "firstName": "Hellen",
@@ -40,6 +29,17 @@
     "dob": "2024-10-02",
     "country": "Canada",
     "email": "carlagcasta@gmail.com",
+    "actions": "<button (click)='deleteTrader'>Delete Trader</button>",
+    "amount": 0
+  },
+  {
+    "key": "4",
+    "id": 4,
+    "firstName": "diego",
+    "lastName": "castaneda",
+    "dob": "2024-10-02",
+    "country": "Spain",
+    "email": "cast4730@mylaurier.ca",
     "actions": "<button (click)='deleteTrader'>Delete Trader</button>",
     "amount": 0
   }
